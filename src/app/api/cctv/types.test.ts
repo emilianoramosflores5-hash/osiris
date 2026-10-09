@@ -1,4 +1,40 @@
-import { describe, expect, it } from 'vitest';
+declare module 'vitest' {
+  export function describe(name: string, fn: () => void): void;
+  export function it(name: string, fn: () => void): void;
+  export function expect(actual: any): {
+    toBe(expected: any): void;
+  };
+}
+
+import { describe, expect, it } from 'vitRead 
+Completed with input: {
+  "path": "C:\\Users\\llane\\OneDrive\\Documents\\GitHub\\osiris\\src\\app\\api\\cctv\\types.test.ts"
+}
+
+Read 
+Completed with input: {
+  "path": "C:\\Users\\llane\\OneDrive\\Documents\\GitHub\\osiris\\package.json"
+}
+
+Find files matching `**/tsconfig*.json`
+
+Search for `vitest|types\.test|declare module`
+
+Read 
+Completed with input: {
+  "path": "C:\\Users\\llane\\OneDrive\\Documents\\GitHub\\osiris\\tsconfig.json"
+}
+
+Read 
+Completed with input: {
+  "path": "C:\\Users\\llane\\OneDrive\\Documents\\GitHub\\osiris\\vitest.config.ts"
+}
+
+Search for `declare module ['"]vitest['"]`
+
+This file both **declares** and **imports** `vitest`. Because it contains imports, TypeScript treats it as a module, so `declare module 'vitest'` is interpreted as a *module augmentation*—a change to an already-resolvable module—not as a way to define a missing module. TypeScript can’t resolve `vitest` in that context, so it reports the error.
+
+The declaration block in `types.test.ts` is unnecessary: `vitest` is already listed as a dev dependency in `package.json`, and it supplies its own types. Remove the `declare module 'vitest' { ... }` block. If the error remains on the import, check that dependencies are installed in the repository root and that VS Code has refreshed its TypeScript project.est';
 import { inferStreamType, normalizeFeedUrl, proxiedImageUrl } from './types';
 
 describe('cctv URL helpers', () => {
