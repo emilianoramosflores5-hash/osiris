@@ -27,28 +27,50 @@ const PROXY_IMAGE_HOSTS = ['infobanjirjps.selangor.gov.my'];
 
 /** The URL a browser can actually load this still from. */
 export function proxiedImageUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+
   let host: string;
   try {
-    host = new URL(url).hostname.toLowerCase();
+    host = new URL(trimmed).hostname.toLowerCase();
   } catch {
-    return url;
+    return trimmed;
   }
   return PROXY_IMAGE_HOSTS.some(h => host === h || host.endsWith('.' + h))
-    ? `/api/cctv/proxy?url=${encodeURIComponent(url)}`
-    : url;
+    ? `/api/cctv/proxy?url=${encodeURIComponent(trimmed)}`
+    : trimmed;
 }
 
 export function normalizeFeedUrl(url: string): string {
-  if (url.startsWith('pics/')) {
-    return `http://free-webcambg.com/${url.split('?')[0]}`;
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+
+  const noQuery = trimmed.split('?')[0];
+  if (noQuery.toLowerCase().startsWith('pics/')) {
+    return `http://free-webcambg.com/${noQuery}`;
   }
-  return url.split('?')[0];
+  return noQuery;
 }
 
 export function inferStreamType(url: string): CctvStreamType {
-  if (/\.m3u8(\?|$)/i.test(url)) return 'hls';
-  if (/youtube\.com\/embed|youtube-nocookie\.com\/embed|rtsp\.me\/embed|ipcamlive\.com\/player|click2stream\.com|windy\.com\/webcams\/\d+\/embed|skylinewebcams\.com|voyage\.aprr\.fr/i.test(url)) {
+  const trimmed = url.trim();
+  if (!trimmed) return 'jpg';
+
+  const lower = trimmed.toLowerCase();
+
+  if (/\.m3u8(?:\?|$)/i.test(lower)) return 'hls';
+
+  if (/youtube\.com\/embed|youtube-nocookie\.com\/embed|rtsp\.me\/embed|ipcamlive\.com\/player|click2stream\.com|windy\.com\/webcams\/\d+\/embed|skylinewebcams\.com|voyage\.aprr\.fr/i.test(lower)) {
     return 'iframe';
   }
+
+  if (/\.mp4(?:\?|$)|\.m4v(?:\?|$)|\.webm(?:\?|$)|\.mov(?:\?|$)|[?&](?:format|file|type)=mp4(?:&|$)/i.test(lower)) {
+    return 'mp4';
+  }
+
+  if (/\.(?:mjpg|mjpeg)(?:\?|$)|\/(?:mjpg|mjpeg)(?:\?|$)|\/cgi-bin\/[^?]*mjpg/i.test(lower)) {
+    return 'mjpeg';
+  }
+
   return 'jpg';
 }
